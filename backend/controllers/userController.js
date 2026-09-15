@@ -1,8 +1,9 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import asyncHandler from "express-async-handler";
 
-export const registerUser = async (req, res) => {
+export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -16,9 +17,9 @@ export const registerUser = async (req, res) => {
     message: "User created successfully",
     data: user,
   });
-};
+});
 
-export const loginUser = async (req, res) => {
+export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
@@ -45,4 +46,4 @@ export const loginUser = async (req, res) => {
     data: token,
     message: "Token created",
   });
-};
+});
