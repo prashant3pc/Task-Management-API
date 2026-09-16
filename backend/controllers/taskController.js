@@ -7,6 +7,7 @@ export const createTask = asyncHandler(async (req, res) => {
     title,
     description,
     status,
+    user: req.user.id,
   });
   return res.json({
     success: true,
@@ -15,7 +16,7 @@ export const createTask = asyncHandler(async (req, res) => {
 });
 
 export const getTasks = asyncHandler(async (req, res) => {
-  const tasks = await Task.find({});
+  const tasks = await Task.find({ user: req.user.id });
   res.json({
     success: true,
     message: "All your tasks is here",
@@ -32,46 +33,67 @@ export const getoneTask = asyncHandler(async (req, res) => {
       message: "Task not found",
     });
   }
-  res.json({
-    success: true,
-    message: "your single task is here",
-    data: task,
-  });
+  if (task.user.toString() === req.user.id) {
+    return res.json({
+      success: true,
+      message: "your single task is here",
+      data: task,
+    });
+  } else {
+    return res.status(403).json({
+      success: false,
+      message: "id doesnt match",
+    });
+  }
 });
 
 export const updateTask = asyncHandler(async (req, res) => {
   const { title, description, status } = req.body;
   const id = req.params.id;
-  const task = await Task.findByIdAndUpdate(
-    id,
-    { title, description, status },
-    { new: true },
-  );
+  const task = await Task.findById(id);
   if (!task) {
     return res.status(404).json({
       success: false,
       message: "Task not found",
     });
   }
-  res.json({
+  if (task.user.toString() !== req.user.id) {
+    return res.status(403).json({
+      success: false,
+      message: "Access denied",
+    });
+  }
+  const updatedTask = await Task.findByIdAndUpdate(
+    id,
+    { title, description, status },
+    { new: true },
+  );
+  return res.status(200).json({
     success: true,
-    message: "Task updated",
-    data: task,
+    message: "Task updated successfully",
+    data: updatedTask,
   });
 });
 
 export const deleteTask = asyncHandler(async (req, res) => {
   const id = req.params.id;
-  const task = await Task.findByIdAndDelete(id);
+  const task = await Task.findById(id);
   if (!task) {
-    return res.json({
+    return res.status(404).json({
       success: false,
       message: "Task not found",
     });
   }
+  if (task.user.toString() !== req.user.id) {
+    return res.status(403).json({
+      success: false,
+      message: "Access denied",
+    });
+  }
+  const deletedTask = await Task.findByIdAndDelete(id);
   res.json({
     success: true,
     message: "Task deleted successfuly",
-    data: task,
+    data: deletedTask,
   });
 });
