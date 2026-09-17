@@ -48,6 +48,6 @@ export const validate = (req, res, next) => {
       message: "Error Occured",
       data: errors.array(),
     });
-  }
+  } 
   next();
 };
