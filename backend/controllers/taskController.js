@@ -28,13 +28,16 @@ export const createTask = asyncHandler(async (req, res) => {
 //   });
 
 // });
+
 export const getTasks = asyncHandler(async (req, res) => {
   const filter = { user: req.user.id };
 
   if (req.query.status) {
     filter.status = req.query.status;
   }
-
+  if (req.query.title) {
+    filter.title = req.query.title;
+  }
   const tasks = await Task.find(filter);
   return res.json({
     success: true,
@@ -42,6 +45,21 @@ export const getTasks = asyncHandler(async (req, res) => {
     data: tasks,
   });
 });
+
+//filter
+// export const getSearch = asyncHandler(async (req, res) => {
+//   const searchFilter = { user: req.user.id };
+
+//   if (req.query.title) {
+//     searchFilter.title = req.query.title;
+//   }
+//   const tasks = await Task.find(searchFilter);
+//   return res.json({
+//     success: true,
+//     message: "Your search title is here",
+//     data: tasks,
+//   });
+// });
 
 export const getoneTask = asyncHandler(async (req, res) => {
   const id = req.params.id;
