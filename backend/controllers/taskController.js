@@ -14,21 +14,8 @@ export const createTask = asyncHandler(async (req, res) => {
     data: newTask,
   });
 });
-//OWNERSHIP ONLY THIS
-// export const getTasks = asyncHandler(async (req, res) => {
 
-//   const tasks = await Task.find({
-//     user: req.user.id,
-//   });
-
-//   return res.json({
-//     success: true,
-//     message: "All your tasks is here",
-//     data: tasks,
-//   });
-
-// });
-
+//ownership+filter by status + filter by search
 export const getTasks = asyncHandler(async (req, res) => {
   const filter = { user: req.user.id };
 
@@ -46,7 +33,22 @@ export const getTasks = asyncHandler(async (req, res) => {
   });
 });
 
-//filter
+//OWNERSHIP ONLY THIS
+// export const getTasks = asyncHandler(async (req, res) => {
+
+//   const tasks = await Task.find({
+//     user: req.user.id,
+//   });
+
+//   return res.json({
+//     success: true,
+//     message: "All your tasks is here",
+//     data: tasks,
+//   });
+
+// });
+
+//filter by searchfilter only
 // export const getSearch = asyncHandler(async (req, res) => {
 //   const searchFilter = { user: req.user.id };
 
@@ -59,6 +61,25 @@ export const getTasks = asyncHandler(async (req, res) => {
 //     message: "Your search title is here",
 //     data: tasks,
 //   });
+// });
+
+//filter by status
+// export const getTasks = asyncHandler(async (req, res) => {
+
+//   const filter = { user: req.user.id };
+
+//   if (req.query.status) {
+//     filter.status = req.query.status;
+//   }
+
+//   const tasks = await Task.find(filter);
+
+//   return res.json({
+//     success: true,
+//     message: "All your tasks is here",
+//     data: tasks,
+//   });
+
 // });
 
 export const getoneTask = asyncHandler(async (req, res) => {
