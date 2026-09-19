@@ -14,17 +14,23 @@ export const createTask = asyncHandler(async (req, res) => {
     data: newTask,
   });
 });
+//OWNERSHIP ONLY THIS
+// export const getTasks = asyncHandler(async (req, res) => {
 
+//   const tasks = await Task.find({
+//     user: req.user.id,
+//   });
+
+//   return res.json({
+//     success: true,
+//     message: "All your tasks is here",
+//     data: tasks,
+//   });
+
+// });
 export const getTasks = asyncHandler(async (req, res) => {
-  // const tasks = await Task.find({
-  //   user: req.user.id,
-  // });
-  // res.json({
-  //   success: true,
-  //   message: "All your tasks is here",
-  //   data: tasks,
-  // });
   const filter = { user: req.user.id };
+
   if (req.query.status) {
     filter.status = req.query.status;
   }
