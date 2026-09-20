@@ -45,12 +45,20 @@ export const getTasks = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
 
   const tasks = await Task.find(filter).sort(sort).skip(skip).limit(limit);
+  const totalTasks = await Task.countDocuments(filter);
+  const totalPages = Math.ceil(totalTasks / limit);
+  const hasNextPage = page < totalPages;
+  const hasPreviousPage = page > 1;
 
   return res.json({
     success: true,
     message: "All your tasks are here",
     page,
     limit,
+    totalTasks,
+    totalPages,
+    hasNextPage,
+    hasPreviousPage,
     data: tasks,
   });
 });
