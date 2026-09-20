@@ -15,23 +15,94 @@ export const createTask = asyncHandler(async (req, res) => {
   });
 });
 
-//ownership+filter by status + filter by search
+// filtering + sorting + pagination
 export const getTasks = asyncHandler(async (req, res) => {
   const filter = { user: req.user.id };
+  const sort = {};
 
+  // Sorting
+  if (req.query.sort === "newest") {
+    sort.createdAt = -1;
+  }
+
+  if (req.query.sort === "oldest") {
+    sort.createdAt = 1;
+  }
+
+  // Filtering
   if (req.query.status) {
     filter.status = req.query.status;
   }
+
   if (req.query.title) {
     filter.title = req.query.title;
   }
-  const tasks = await Task.find(filter);
+
+  // Pagination
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+
+  const skip = (page - 1) * limit;
+
+  const tasks = await Task.find(filter).sort(sort).skip(skip).limit(limit);
+
   return res.json({
     success: true,
-    message: "All your tasks is here",
+    message: "All your tasks are here",
+    page,
+    limit,
     data: tasks,
   });
 });
+
+// writing sorting
+// export const getTasks = asyncHandler(async (req, res) => {
+//   const filter = { user: req.user.id };
+
+//   const sort = {};
+
+//   if (req.query.sort === "newest") {
+//     sort.createdAt = -1;
+//   }
+
+//   if (req.query.sort === "oldest") {
+//     sort.createdAt = 1;
+//   }
+
+//   if (req.query.status) {
+//     filter.status = req.query.status;
+//   }
+
+//   if (req.query.title) {
+//     filter.title = req.query.title;
+//   }
+
+//   const tasks = await Task.find(filter).sort(sort);
+
+//   return res.json({
+//     success: true,
+//     message: "All your tasks is here",
+//     data: tasks,
+//   });
+// });
+
+//ownership+filter by status + filter by search
+// export const getTasks = asyncHandler(async (req, res) => {
+//   const filter = { user: req.user.id };
+
+//   if (req.query.status) {
+//     filter.status = req.query.status;
+//   }
+//   if (req.query.title) {
+//     filter.title = req.query.title;
+//   }
+//   const tasks = await Task.find(filter);
+//   return res.json({
+//     success: true,
+//     message: "All your tasks is here",
+//     data: tasks,
+//   });
+// });
 
 //OWNERSHIP ONLY THIS
 // export const getTasks = asyncHandler(async (req, res) => {
