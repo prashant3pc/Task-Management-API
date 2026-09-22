@@ -2,11 +2,12 @@ import Task from "../models/Task.js";
 import asyncHandler from "express-async-handler";
 
 export const createTask = asyncHandler(async (req, res) => {
-  const { title, description, status } = req.body;
+  const { title, description, status, priority } = req.body;
   const newTask = await Task.create({
     title,
     description,
     status,
+    priority,
     user: req.user.id,
   });
   return res.json({
@@ -15,11 +16,17 @@ export const createTask = asyncHandler(async (req, res) => {
   });
 });
 
-// filtering + sorting + pagination
+// filtering + sorting + pagination + Search
 export const getTasks = asyncHandler(async (req, res) => {
-  const filter = { user: req.user.id };
+  const filter = {
+    user: req.user.id,
+  };
   const sort = {};
 
+  //Search
+  if (req.query.search) {
+    filter.title = { $regex: req.query.search, $options: "i" };
+  }
   // Sorting
   if (req.query.sort === "newest") {
     sort.createdAt = -1;
@@ -34,8 +41,8 @@ export const getTasks = asyncHandler(async (req, res) => {
     filter.status = req.query.status;
   }
 
-  if (req.query.title) {
-    filter.title = req.query.title;
+  if (req.query.priority) {
+    filter.priority = req.query.priority;
   }
 
   // Pagination
@@ -52,7 +59,6 @@ export const getTasks = asyncHandler(async (req, res) => {
 
   return res.json({
     success: true,
-    message: "All your tasks are here",
     page,
     limit,
     totalTasks,
